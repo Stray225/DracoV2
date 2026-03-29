@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DRACO Zapatillas — Nike, Jordan, Adidas, New Balance y más. Streetwear premium. Buenos Aires.">
+  <title>Zapatillas — DRACO · Buenos Aires</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #0a0a0a; color: #f0ede8; font-family: 'DM Sans', sans-serif; overflow-x: hidden; cursor: none; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { cursor: none; font-family: inherit; border: none; background: none; }
+
+    :root {
+      --black: #0a0a0a; --red: #e02020; --bone: #f0ede8;
+      --gray1: #111111; --gray2: #1a1a1a; --gray3: #2a2a2a; --gray4: #3a3a3a; --graytxt: #888888;
+      --font-d: 'Bebas Neue', sans-serif; --font-b: 'DM Sans', sans-serif;
+      --ease: cubic-bezier(0.4,0,0.2,1); --radius: 4px;
+    }
+
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--red); border-radius: 50%; pointer-events: none; z-index: 99999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s; }
+    .cursor.hover { width: 24px; height: 24px; background: rgba(224,32,32,0.4); }
+    .page-overlay { position: fixed; inset: 0; background: var(--black); z-index: 9999; pointer-events: none; opacity: 0; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--black); } ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 20px 40px; display: flex; align-items: center; transition: padding 0.4s var(--ease), background 0.4s var(--ease); }
+    .nav.scrolled { padding: 12px 40px; background: rgba(10,10,10,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(224,32,32,0.15); }
+    .nav-inner { display: flex; align-items: center; width: 100%; }
+    .nav-logo { flex-shrink: 0; }
+    .logo-img { height: 36px; width: auto; filter: drop-shadow(0 0 8px rgba(224,32,32,0.5)); transition: filter 0.3s; }
+    .logo-img:hover { filter: drop-shadow(0 0 16px rgba(224,32,32,0.9)); }
+    .nav-links { display: flex; gap: 36px; margin: 0 auto; }
+    .nav-link { font-family: var(--font-d); font-size: 16px; letter-spacing: 2px; color: rgba(240,237,232,0.7); position: relative; transition: color 0.3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 100%; height: 2px; background: var(--red); transition: right 0.3s var(--ease); }
+    .nav-link:hover, .nav-link.active { color: var(--bone); }
+    .nav-link:hover::after, .nav-link.active::after { right: 0; }
+    .nav-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+    .btn-admin-nav { font-family: var(--font-d); font-size: 14px; letter-spacing: 2px; color: var(--graytxt); padding: 6px 14px; border: 1px solid var(--gray3); border-radius: var(--radius); transition: all 0.3s; }
+    .btn-admin-nav:hover { color: var(--bone); border-color: var(--red); }
+    .btn-admin-nav.logged { color: var(--red); border-color: var(--red); }
+    .btn-logout { display: none; font-family: var(--font-d); font-size: 12px; letter-spacing: 2px; color: var(--red); padding: 6px 14px; border: 1px solid rgba(224,32,32,0.3); border-radius: var(--radius); transition: all 0.3s; }
+    body.admin-mode .btn-logout { display: block; }
+    .btn-logout:hover { background: rgba(224,32,32,0.1); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--bone); transition: all 0.3s; }
+    .nav-mobile-menu { display: none; flex-direction: column; background: rgba(10,10,10,0.98); border-top: 1px solid var(--gray3); }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-menu .nav-link { padding: 16px 40px; font-size: 20px; border-bottom: 1px solid var(--gray2); }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 140px 40px 60px;
+      border-bottom: 1px solid var(--gray2);
+      background: linear-gradient(to bottom, rgba(224,32,32,0.05) 0%, transparent 100%);
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: 'ZAPATILLAS';
+      position: absolute; font-family: var(--font-d);
+      font-size: clamp(80px, 18vw, 220px);
+      color: rgba(255,255,255,0.03);
+      bottom: -20px; left: 40px;
+      pointer-events: none; white-space: nowrap; letter-spacing: 8px;
+      line-height: 1;
+    }
+    .page-header-inner { position: relative; z-index: 1; }
+    .page-header-label { font-family: var(--font-d); font-size: 12px; letter-spacing: 6px; color: var(--red); margin-bottom: 12px; }
+    .page-header-title { font-family: var(--font-d); font-size: clamp(52px, 10vw, 120px); line-height: 0.85; }
+    .page-header-meta { margin-top: 20px; font-size: 14px; color: var(--graytxt); font-weight: 300; }
+    .page-header-count { color: var(--red); font-weight: 500; }
+
+    /* FILTERS */
+    .filters-bar { padding: 24px 40px; border-bottom: 1px solid var(--gray2); background: var(--gray1); position: sticky; top: 60px; z-index: 100; }
+    .filters-inner { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+    .filter-group { display: flex; align-items: center; gap: 10px; }
+    .filter-label { font-family: var(--font-d); font-size: 12px; letter-spacing: 3px; color: var(--graytxt); white-space: nowrap; }
+    .filter-pills { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .filter-pills::-webkit-scrollbar { display: none; }
+    .filter-pill {
+      padding: 6px 14px; border: 1px solid var(--gray3); border-radius: 2px;
+      font-family: var(--font-d); font-size: 13px; letter-spacing: 1px;
+      color: var(--graytxt); white-space: nowrap;
+      transition: all 0.2s; cursor: none;
+    }
+    .filter-pill:hover { border-color: var(--gray4); color: var(--bone); }
+    .filter-pill.active { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.1); }
+    .filter-sep { width: 1px; height: 24px; background: var(--gray3); flex-shrink: 0; }
+    .filter-clear { font-family: var(--font-d); font-size: 11px; letter-spacing: 2px; color: var(--graytxt); padding: 6px 10px; border: 1px solid var(--gray3); border-radius: 2px; transition: all 0.2s; cursor: none; }
+    .filter-clear:hover { color: var(--red); border-color: rgba(224,32,32,0.3); }
+
+    /* PRODUCT GRID */
+    .products-section { padding: 48px 40px 80px; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .product-card {
+      position: relative; overflow: hidden;
+      background: var(--gray1); border: 1px solid var(--gray2); border-radius: var(--radius);
+      cursor: none; transition: border-color 0.3s;
+    }
+    .product-card:hover { border-color: rgba(224,32,32,0.4); }
+    .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 4/3; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .product-card:hover .card-img { transform: scale(1.06); }
+    .card-img-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0); transition: background 0.4s; }
+    .product-card:hover .card-img-overlay { background: rgba(224,32,32,0.06); }
+    .card-glow { position: absolute; inset: 0; border-radius: var(--radius); box-shadow: inset 0 0 0 1px transparent; transition: box-shadow 0.3s; pointer-events: none; }
+    .product-card:hover .card-glow { box-shadow: inset 0 0 0 1px rgba(224,32,32,0.4), 0 8px 32px rgba(224,32,32,0.12); }
+    .card-badge { position: absolute; top: 10px; left: 10px; z-index: 2; font-family: var(--font-d); font-size: 10px; letter-spacing: 2px; padding: 3px 8px; background: var(--red); color: var(--bone); border-radius: 2px; }
+    .card-badge.hot { background: var(--red); }
+    .card-badge.new { background: #1a4a1a; color: #4ade80; }
+    .card-badge.drop { background: #2a1a00; color: #fbbf24; }
+    .card-body { padding: 14px 16px 18px; }
+    .card-brand { font-size: 10px; letter-spacing: 3px; color: var(--graytxt); margin-bottom: 5px; text-transform: uppercase; }
+    .card-name { font-family: var(--font-d); font-size: clamp(16px, 1.8vw, 22px); line-height: 1; margin-bottom: 10px; letter-spacing: 1px; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card-price { font-family: var(--font-d); font-size: clamp(15px, 1.6vw, 20px); color: var(--bone); }
+    .card-cta { font-size: 10px; letter-spacing: 2px; color: var(--graytxt); padding: 5px 10px; border: 1px solid var(--gray3); border-radius: 2px; transition: all 0.3s; }
+    .product-card:hover .card-cta { color: var(--bone); border-color: var(--red); }
+    .card-admin-actions { display: none; position: absolute; top: 10px; right: 10px; z-index: 10; gap: 6px; }
+    body.admin-mode .card-admin-actions { display: flex; }
+    .card-admin-btn { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s; }
+    .card-edit-btn { background: rgba(26,26,26,0.9); color: var(--bone); border: 1px solid var(--gray4); }
+    .card-edit-btn:hover { background: var(--gray3); }
+    .card-delete-btn { background: rgba(224,32,32,0.15); color: var(--red); border: 1px solid rgba(224,32,32,0.3); }
+    .card-delete-btn:hover { background: rgba(224,32,32,0.3); }
+
+    /* No results */
+    .no-results { grid-column: 1/-1; padding: 80px 0; text-align: center; }
+    .no-results-title { font-family: var(--font-d); font-size: 32px; letter-spacing: 3px; color: var(--gray4); margin-bottom: 12px; }
+    .no-results-sub { font-size: 14px; color: var(--graytxt); }
+
+    /* Admin FAB */
+    .admin-fab { display: none; position: fixed; bottom: 100px; right: 24px; z-index: 500; width: 48px; height: 48px; background: var(--red); border-radius: 50%; align-items: center; justify-content: center; font-size: 24px; color: var(--bone); box-shadow: 0 4px 20px rgba(224,32,32,0.4); transition: transform 0.2s, box-shadow 0.2s; }
+    body.admin-mode .admin-fab { display: flex; }
+    .admin-fab:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(224,32,32,0.6); }
+
+    /* Footer */
+    footer { background: #050505; border-top: 1px solid var(--gray2); padding: 60px 40px 40px; }
+    .footer-top { display: grid; grid-template-columns: 1fr auto 1fr; gap: 40px; align-items: start; padding-bottom: 48px; border-bottom: 1px solid var(--gray2); }
+    .footer-logo-img { height: 32px; filter: drop-shadow(0 0 6px rgba(224,32,32,0.4)); margin-bottom: 12px; }
+    .footer-tagline { font-size: 12px; letter-spacing: 3px; color: var(--graytxt); text-transform: uppercase; }
+    .footer-nav { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .footer-nav-link { font-family: var(--font-d); font-size: 15px; letter-spacing: 2px; color: var(--graytxt); transition: color 0.3s; }
+    .footer-nav-link:hover { color: var(--bone); }
+    .footer-social { display: flex; justify-content: flex-end; }
+    .footer-ig { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--graytxt); transition: color 0.3s; }
+    .footer-ig:hover { color: var(--bone); }
+    .footer-ig svg { width: 20px; height: 20px; }
+    .footer-bottom { padding-top: 28px; display: flex; align-items: center; justify-content: center; }
+    .footer-copy { font-size: 12px; color: rgba(240,237,232,0.25); letter-spacing: 2px; }
+
+    /* WhatsApp FAB */
+    .wa-fab { position: fixed; bottom: 32px; right: 32px; z-index: 500; width: 56px; height: 56px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.35); transition: transform 0.2s, box-shadow 0.2s; }
+    .wa-fab:hover { transform: scale(1.1) translateY(-2px); box-shadow: 0 8px 32px rgba(37,211,102,0.5); }
+    .wa-fab svg { width: 28px; height: 28px; fill: #fff; }
+
+    /* Admin trigger */
+    .admin-trigger { position: fixed; bottom: 8px; left: 8px; z-index: 400; width: 24px; height: 24px; color: rgba(255,255,255,0.08); font-size: 18px; line-height: 24px; text-align: center; transition: color 0.3s; }
+    .admin-trigger:hover { color: rgba(255,255,255,0.25); }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--gray2); border: 1px solid var(--gray4); color: var(--bone); padding: 12px 24px; border-radius: 4px; font-size: 14px; z-index: 9000; opacity: 0; transition: opacity 0.3s, transform 0.3s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: #4ade80; color: #4ade80; }
+    .toast.error { border-color: var(--red); color: var(--red); }
+
+    /* MODALS */
+    .modal-backdrop { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .modal-box { background: var(--gray1); border: 1px solid var(--gray3); border-radius: 6px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(0.97); transition: transform 0.3s var(--ease); }
+    .modal-backdrop.open .modal-box { transform: none; }
+    .modal-box.wide { max-width: 760px; }
+    .modal-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--gray3); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-family: var(--font-d); font-size: 28px; letter-spacing: 2px; }
+    .modal-close { width: 36px; height: 36px; border-radius: 50%; color: var(--graytxt); border: 1px solid var(--gray3); font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { color: var(--bone); border-color: var(--gray4); background: var(--gray2); }
+    .modal-body { padding: 24px 28px; }
+
+    /* Product modal */
+    .product-modal-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .product-modal-img-wrap { aspect-ratio: 1; overflow: hidden; border-radius: 4px; background: var(--gray2); }
+    .product-modal-img { width: 100%; height: 100%; object-fit: cover; }
+    .product-modal-info { display: flex; flex-direction: column; gap: 16px; }
+    .product-modal-badge { display: inline-block; font-family: var(--font-d); font-size: 11px; letter-spacing: 2px; padding: 4px 10px; background: var(--red); color: var(--bone); border-radius: 2px; width: fit-content; }
+    .product-modal-brand { font-size: 11px; letter-spacing: 3px; color: var(--graytxt); text-transform: uppercase; }
+    .product-modal-name { font-family: var(--font-d); font-size: clamp(24px, 3vw, 36px); line-height: 0.95; }
+    .product-modal-price { font-family: var(--font-d); font-size: 32px; color: var(--red); }
+    .product-modal-desc { font-size: 14px; color: rgba(240,237,232,0.6); line-height: 1.65; font-weight: 300; }
+    .sizes-label { font-size: 11px; letter-spacing: 3px; color: var(--graytxt); text-transform: uppercase; margin-bottom: 10px; }
+    .sizes-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .size-pill { padding: 8px 14px; border: 1px solid var(--gray3); border-radius: 3px; font-family: var(--font-d); font-size: 15px; letter-spacing: 1px; color: var(--graytxt); transition: all 0.2s; cursor: none; }
+    .size-pill:hover { border-color: var(--gray4); color: var(--bone); }
+    .size-pill.selected { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.12); }
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-d); font-size: 18px; letter-spacing: 3px; background: #25D366; color: #fff; padding: 14px 28px; border-radius: 3px; transition: background 0.3s, transform 0.2s; width: 100%; }
+    .btn-wa:hover { background: #1ea854; transform: translateY(-1px); }
+    .btn-wa svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+
+    /* Login */
+    .login-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 11px; letter-spacing: 3px; color: var(--graytxt); text-transform: uppercase; }
+    .form-input, .form-select, .form-textarea { background: var(--gray2); border: 1px solid var(--gray3); border-radius: var(--radius); color: var(--bone); font-family: var(--font-b); font-size: 15px; padding: 12px 14px; outline: none; transition: border-color 0.3s; width: 100%; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--red); }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-select { appearance: none; cursor: none; }
+    .btn-submit { font-family: var(--font-d); font-size: 18px; letter-spacing: 3px; background: var(--red); color: var(--bone); padding: 14px 28px; border-radius: var(--radius); transition: background 0.3s, transform 0.2s; width: 100%; }
+    .btn-submit:hover { background: #c01a1a; transform: translateY(-1px); }
+
+    /* Admin form */
+    .admin-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .img-tabs { display: flex; gap: 0; margin-bottom: 8px; border-radius: var(--radius) var(--radius) 0 0; overflow: hidden; }
+    .img-tab { flex: 1; padding: 10px 16px; font-family: var(--font-d); font-size: 14px; letter-spacing: 1px; background: var(--gray2); color: var(--graytxt); border: 1px solid var(--gray3); transition: all 0.2s; }
+    .img-tab.active { background: var(--gray3); color: var(--bone); border-color: var(--red); }
+    .img-tab-content { display: none; }
+    .img-tab-content.active { display: block; }
+    .size-toggle-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .size-toggle { padding: 8px 14px; border: 1px solid var(--gray3); border-radius: 3px; font-family: var(--font-d); font-size: 15px; color: var(--graytxt); transition: all 0.2s; cursor: none; }
+    .size-toggle.active { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.15); }
+    .preview-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--gray3); display: none; margin-top: 8px; }
+    .preview-img.visible { display: block; }
+
+    /* Delete confirm */
+    .confirm-text { font-size: 16px; color: rgba(240,237,232,0.7); margin-bottom: 24px; line-height: 1.5; }
+    .confirm-name { color: var(--bone); font-weight: 600; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .btn-cancel { flex: 1; padding: 12px; font-family: var(--font-d); font-size: 16px; letter-spacing: 2px; border: 1px solid var(--gray3); color: var(--graytxt); border-radius: var(--radius); transition: all 0.2s; }
+    .btn-cancel:hover { border-color: var(--gray4); color: var(--bone); }
+    .btn-delete { flex: 1; padding: 12px; font-family: var(--font-d); font-size: 16px; letter-spacing: 2px; background: rgba(224,32,32,0.15); color: var(--red); border: 1px solid rgba(224,32,32,0.3); border-radius: var(--radius); transition: all 0.2s; }
+    .btn-delete:hover { background: var(--red); color: var(--bone); }
+
+    /* Skeleton */
+    .skeleton { background: var(--gray2); border-radius: var(--radius); animation: skeleton-pulse 1.5s ease-in-out infinite; }
+    .skeleton-card { aspect-ratio: 4/3; }
+    @keyframes skeleton-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px) {
+      .nav { padding: 16px 20px; } .nav.scrolled { padding: 10px 20px; }
+      .nav-links { display: none; } .nav-hamburger { display: flex; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .filters-inner { gap: 16px; }
+      .page-header { padding: 120px 20px 48px; }
+      .products-section { padding: 32px 20px 60px; }
+      .filters-bar { padding: 16px 20px; }
+      .footer-top { grid-template-columns: 1fr; text-align: center; }
+      .footer-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+      .footer-social { justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .cursor { display: none; } body, button, a { cursor: auto; }
+      .product-modal-inner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="page-overlay" id="pageOverlay"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" onclick="navigateTo(event,'index.html')">
+        <img src="logo.png" alt="DRACO" class="logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:4px;color:#f0ede8\'>DRACO</span>'">
+      </a>
+      <nav class="nav-links">
+        <a href="index.html"       class="nav-link" onclick="navigateTo(event,'index.html')">INICIO</a>
+        <a href="zapatillas.html"  class="nav-link active">ZAPATILLAS</a>
+        <a href="ropa.html"        class="nav-link" onclick="navigateTo(event,'ropa.html')">ROPA</a>
+      </nav>
+      <div class="nav-right">
+        <button class="btn-logout" onclick="adminLogout()">CERRAR SESIÓN</button>
+        <button class="btn-admin-nav" id="btnAdminNav" onclick="handleAdminNavClick()">LOGIN</button>
+      </div>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-mobile-menu" id="navMobileMenu">
+      <a href="index.html"       class="nav-link" onclick="navigateTo(event,'index.html')">INICIO</a>
+      <a href="zapatillas.html"  class="nav-link active">ZAPATILLAS</a>
+      <a href="ropa.html"        class="nav-link" onclick="navigateTo(event,'ropa.html')">ROPA</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <p class="page-header-label">— COLECCIÓN</p>
+      <h1 class="page-header-title" id="pageHeaderTitle">ZAPATILLAS</h1>
+      <p class="page-header-meta"><span class="page-header-count" id="productCount">0</span> productos disponibles</p>
+    </div>
+  </header>
+
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="filters-inner">
+      <div class="filter-group">
+        <span class="filter-label">MARCA</span>
+        <div class="filter-pills" id="brandFilters">
+          <button class="filter-pill active" data-brand="all" onclick="filterBrand(this,'all')">TODOS</button>
+          <button class="filter-pill" data-brand="Nike" onclick="filterBrand(this,'Nike')">NIKE</button>
+          <button class="filter-pill" data-brand="Jordan" onclick="filterBrand(this,'Jordan')">JORDAN</button>
+          <button class="filter-pill" data-brand="Adidas" onclick="filterBrand(this,'Adidas')">ADIDAS</button>
+          <button class="filter-pill" data-brand="New Balance" onclick="filterBrand(this,'New Balance')">NEW BALANCE</button>
+          <button class="filter-pill" data-brand="Puma" onclick="filterBrand(this,'Puma')">PUMA</button>
+          <button class="filter-pill" data-brand="Vans" onclick="filterBrand(this,'Vans')">VANS</button>
+          <button class="filter-pill" data-brand="Converse" onclick="filterBrand(this,'Converse')">CONVERSE</button>
+        </div>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <span class="filter-label">TALLE</span>
+        <div class="filter-pills" id="sizeFilters">
+          <button class="filter-pill active" data-size="all" onclick="filterSize(this,'all')">TODOS</button>
+          <button class="filter-pill" data-size="38" onclick="filterSize(this,'38')">38</button>
+          <button class="filter-pill" data-size="39" onclick="filterSize(this,'39')">39</button>
+          <button class="filter-pill" data-size="40" onclick="filterSize(this,'40')">40</button>
+          <button class="filter-pill" data-size="41" onclick="filterSize(this,'41')">41</button>
+          <button class="filter-pill" data-size="42" onclick="filterSize(this,'42')">42</button>
+          <button class="filter-pill" data-size="43" onclick="filterSize(this,'43')">43</button>
+          <button class="filter-pill" data-size="44" onclick="filterSize(this,'44')">44</button>
+          <button class="filter-pill" data-size="45" onclick="filterSize(this,'45')">45</button>
+        </div>
+      </div>
+      <button class="filter-clear" onclick="clearFilters()">LIMPIAR</button>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section class="products-section">
+    <div class="products-grid" id="productsGrid">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <img src="logo.png" alt="DRACO" class="footer-logo-img" onerror="this.outerHTML='<div style=\'font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:4px;color:#f0ede8;margin-bottom:12px\'>DRACO</div>'">
+        <p class="footer-tagline">Authentic Streetwear · Buenos Aires</p>
+      </div>
+      <nav class="footer-nav">
+        <a href="index.html"       class="footer-nav-link">INICIO</a>
+        <a href="zapatillas.html"  class="footer-nav-link">ZAPATILLAS</a>
+        <a href="ropa.html"        class="footer-nav-link">ROPA</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/draco.baires" class="footer-ig" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @draco.baires
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2025 DRACO · Buenos Aires · Todos los derechos reservados</p></div>
+  </footer>
+
+  <a href="https://wa.me/5491121671135" class="wa-fab" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <button class="admin-trigger" onclick="openLoginModal()" title="Admin">·</button>
+  <button class="admin-fab" onclick="openAdminModal()">+</button>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-box wide">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalProductName">PRODUCTO</h3>
+        <button class="modal-close" onclick="closeProductModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="product-modal-inner">
+          <div class="product-modal-img-wrap"><img id="modalProductImg" src="" alt="" class="product-modal-img" loading="lazy"></div>
+          <div class="product-modal-info">
+            <span class="product-modal-badge" id="modalProductBadge" style="display:none"></span>
+            <p class="product-modal-brand" id="modalProductBrand"></p>
+            <h2 class="product-modal-name" id="modalProductName2"></h2>
+            <p class="product-modal-price" id="modalProductPrice"></p>
+            <p class="product-modal-desc" id="modalProductDesc"></p>
+            <div id="modalSizesSection">
+              <p class="sizes-label">TALLES DISPONIBLES</p>
+              <div class="sizes-pills" id="modalSizesPills"></div>
+            </div>
+            <a href="#" class="btn-wa" id="modalWaBtn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              CONSULTAR POR WHATSAPP
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3 class="modal-title">ACCESO ADMIN</h3><button class="modal-close" onclick="closeLoginModal()">✕</button></div>
+      <div class="modal-body">
+        <form class="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group"><label class="form-label">USUARIO</label><input type="text" id="loginUser" class="form-input" required autocomplete="username"></div>
+          <div class="form-group"><label class="form-label">CONTRASEÑA</label><input type="password" id="loginPass" class="form-input" required autocomplete="current-password"></div>
+          <button type="submit" class="btn-submit">INGRESAR</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN MODAL -->
+  <div class="modal-backdrop" id="adminModal">
+    <div class="modal-box wide">
+      <div class="modal-header"><h3 class="modal-title" id="adminModalTitle">NUEVO PRODUCTO</h3><button class="modal-close" onclick="closeAdminModal()">✕</button></div>
+      <div class="modal-body">
+        <form class="admin-form" id="adminForm" onsubmit="handleProductSubmit(event)">
+          <input type="hidden" id="editProductId">
+          <div class="form-group"><label class="form-label">NOMBRE</label><input type="text" id="pName" class="form-input" required></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">PRECIO ($)</label><input type="text" id="pPrice" class="form-input" required inputmode="numeric"></div>
+            <div class="form-group"><label class="form-label">MARCA</label><input type="text" id="pBrand" class="form-input"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">BADGE</label><select id="pBadge" class="form-select form-input"><option value="">Sin badge</option><option value="HOT">HOT</option><option value="NEW">NEW</option><option value="DROP">DROP</option></select></div>
+            <div class="form-group"><label class="form-label">STOCK</label><input type="number" id="pStock" class="form-input" value="1" min="0"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">TALLES</label>
+            <div class="size-toggle-group" id="sizeToggleGroup"></div>
+          </div>
+          <div class="form-group"><label class="form-label">DESCRIPCIÓN</label><textarea id="pDesc" class="form-textarea"></textarea></div>
+          <div class="form-group">
+            <label class="form-label">IMAGEN</label>
+            <div class="img-tabs">
+              <button type="button" class="img-tab active" onclick="switchImgTab('url',this)">PEGAR URL</button>
+              <button type="button" class="img-tab" onclick="switchImgTab('file',this)">SUBIR ARCHIVO</button>
+            </div>
+            <div class="img-tab-content active" id="tabUrl"><input type="url" id="pImgUrl" class="form-input" placeholder="https://..." oninput="previewImgUrl(this.value)"></div>
+            <div class="img-tab-content" id="tabFile"><input type="file" id="pImgFile" class="form-input" accept="image/*" onchange="previewImgFile(this)"></div>
+            <img id="imgPreview" class="preview-img" alt="Vista previa">
+          </div>
+          <button type="submit" class="btn-submit" id="adminSubmitBtn">GUARDAR PRODUCTO</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE MODAL -->
+  <div class="modal-backdrop" id="deleteModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3 class="modal-title">ELIMINAR</h3><button class="modal-close" onclick="closeDeleteModal()">✕</button></div>
+      <div class="modal-body">
+        <p class="confirm-text">¿Eliminar <span class="confirm-name" id="deleteProductName"></span>? Esta acción no se puede deshacer.</p>
+        <div class="confirm-actions">
+          <button class="btn-cancel" onclick="closeDeleteModal()">CANCELAR</button>
+          <button class="btn-delete" onclick="confirmDelete()">ELIMINAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── CONFIG ─────────────────────────────────────────
+    const SUPABASE_URL = 'https://TU_PROJECT_ID.supabase.co';
+    const SUPABASE_KEY = 'TU_ANON_PUBLIC_KEY';
+    const WA_NUMBER    = '5491121671135';
+    const PAGE_CATEGORY = 'zapatillas';
+    const SIZES_ZAP  = ['38','39','40','41','42','43','44','45'];
+    const SIZES_ROPA = ['XS','S','M','L','XL'];
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const DEFAULT_ZAPATILLAS = [
+      { name:'Nike Air Max 90', price:'$125.000', category:'zapatillas', cat:'Zapatillas', brand:'Nike', badge:'HOT', description:'El ícono que definió una era. Mediasuela Air visible, comodidad incomparable.', sizes:['38','39','40','41','42','43','44','45'], stock:5, images:['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80'] },
+      { name:'Air Force 1 Low', price:'$98.000', category:'zapatillas', cat:'Zapatillas', brand:'Nike', badge:'NEW', description:'La zapatilla más vendida de todos los tiempos. Cuero premium en blanco puro.', sizes:['38','39','40','41','42','43','44','45'], stock:8, images:['https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80'] },
+      { name:'Jordan 1 Retro High', price:'$185.000', category:'zapatillas', cat:'Zapatillas', brand:'Jordan', badge:'DROP', description:'La zapatilla que cambió la cultura. Colorway bred retro, tiro alto.', sizes:['40','41','42','43','44'], stock:3, images:['https://images.unsplash.com/photo-1556906781-9a412961a28c?w=600&q=80'] },
+      { name:'Nike Dunk Low', price:'$115.000', category:'zapatillas', cat:'Zapatillas', brand:'Nike', badge:'HOT', description:'Diseñada para la cancha, adoptada por la calle. Perfil limpio, suede premium.', sizes:['38','39','40','41','42','43','44'], stock:6, images:['https://images.unsplash.com/photo-1605408499391-6368c628ef42?w=600&q=80'] },
+      { name:'Vans Old Skool', price:'$72.000', category:'zapatillas', cat:'Zapatillas', brand:'Vans', badge:'', description:'Skate heritage en su máxima expresión. La raya lateral, el canvas resistente.', sizes:['38','39','40','41','42','43','44','45'], stock:10, images:['https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&q=80'] },
+      { name:'Converse Chuck 70', price:'$68.000', category:'zapatillas', cat:'Zapatillas', brand:'Converse', badge:'NEW', description:'La versión premium del clásico absoluto. Canvas más grueso, construcción reforzada.', sizes:['38','39','40','41','42','43','44'], stock:7, images:['https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=600&q=80'] },
+      { name:'Adidas Forum Low', price:'$95.000', category:'zapatillas', cat:'Zapatillas', brand:'Adidas', badge:'', description:'Basketball de los 80s reinventado. Upper en cuero, tira de velcro icónica.', sizes:['39','40','41','42','43','44'], stock:4, images:['https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=600&q=80'] },
+      { name:'New Balance 990v5', price:'$168.000', category:'zapatillas', cat:'Zapatillas', brand:'New Balance', badge:'HOT', description:'Made in USA. La zapatilla favorita de los que saben.', sizes:['40','41','42','43','44','45'], stock:3, images:['https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&q=80'] },
+      { name:'Puma Suede Classic', price:'$65.000', category:'zapatillas', cat:'Zapatillas', brand:'Puma', badge:'', description:'Desde 1968, la zapatilla que conecta el deporte con la cultura urbana.', sizes:['38','39','40','41','42','43','44'], stock:9, images:['https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&q=80'] },
+      { name:'Asics Gel-Lyte III', price:'$110.000', category:'zapatillas', cat:'Zapatillas', brand:'Asics', badge:'NEW', description:'Running japonés con alma de coleccionista. Sistema GEL en talón.', sizes:['39','40','41','42','43','44'], stock:5, images:['https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&q=80'] },
+      { name:'Reebok Classic Leather', price:'$78.000', category:'zapatillas', cat:'Zapatillas', brand:'Reebok', badge:'', description:'El clásico de los 80s que nunca pasa de moda. Cuero suave, perfil bajo.', sizes:['38','39','40','41','42','43','44','45'], stock:6, images:['https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&q=80'] },
+      { name:'On Cloud 5', price:'$148.000', category:'zapatillas', cat:'Zapatillas', brand:'On Running', badge:'DROP', description:'Tecnología suiza en la suela. CloudTec con amortiguación zero-gravity.', sizes:['40','41','42','43','44','45'], stock:4, images:['https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80'] },
+    ];
+
+    let allProducts = [];
+    let filteredProducts = [];
+    let activeBrand = 'all';
+    let activeSize = 'all';
+    let isAdmin = false;
+    let currentModalProduct = null;
+    let selectedModalSize = null;
+    let deleteTargetId = null;
+    let editImgTab = 'url';
+
+    // Session
+    function restoreSession() {
+      if (sessionStorage.getItem('draco_adm') === '1') {
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        document.getElementById('btnAdminNav').textContent = 'ADMIN ✓';
+        document.getElementById('btnAdminNav').classList.add('logged');
+      }
+    }
+    function adminLogout() {
+      sessionStorage.removeItem('draco_adm');
+      isAdmin = false;
+      document.body.classList.remove('admin-mode');
+      document.getElementById('btnAdminNav').textContent = 'LOGIN';
+      document.getElementById('btnAdminNav').classList.remove('logged');
+      renderGrid(filteredProducts);
+      showToast('Sesión cerrada');
+    }
+
+    // Supabase
+    async function loadProducts() {
+      try {
+        const { data, error } = await sb.from('products').select('*').eq('category', PAGE_CATEGORY).order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          await seedDefaultProducts();
+          return;
+        }
+        allProducts = data;
+        applyFilters();
+      } catch (e) {
+        console.warn('Supabase no disponible:', e.message);
+        allProducts = DEFAULT_ZAPATILLAS.map((p, i) => ({ ...p, id: 'local-' + i }));
+        applyFilters();
+      }
+    }
+
+    async function seedDefaultProducts() {
+      try {
+        const { data, error } = await sb.from('products').insert(DEFAULT_ZAPATILLAS).select();
+        if (error) throw error;
+        allProducts = data;
+      } catch(e) {
+        allProducts = DEFAULT_ZAPATILLAS.map((p, i) => ({ ...p, id: 'local-' + i }));
+      }
+      applyFilters();
+    }
+
+    async function saveProduct(data, isEdit, editId) {
+      try {
+        if (isEdit) {
+          const { error } = await sb.from('products').update(data).eq('id', editId);
+          if (error) throw error;
+        } else {
+          const { error } = await sb.from('products').insert([{ ...data, category: PAGE_CATEGORY, cat: 'Zapatillas' }]);
+          if (error) throw error;
+        }
+        await loadProducts();
+        showToast(isEdit ? 'Producto actualizado ✓' : 'Producto agregado ✓', 'success');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function deleteProduct(id) {
+      try {
+        const { error } = await sb.from('products').delete().eq('id', id);
+        if (error) throw error;
+        allProducts = allProducts.filter(p => p.id !== id);
+        applyFilters();
+        showToast('Producto eliminado', 'success');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function uploadImage(file) {
+      const ext = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { data, error } = await sb.storage.from('product-images').upload(fileName, file, { contentType: file.type });
+      if (error) throw error;
+      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(data.path);
+      return urlData.publicUrl;
+    }
+
+    // Filters
+    function filterBrand(btn, brand) {
+      document.querySelectorAll('#brandFilters .filter-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      activeBrand = brand;
+      applyFilters();
+    }
+    function filterSize(btn, size) {
+      document.querySelectorAll('#sizeFilters .filter-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      activeSize = size;
+      applyFilters();
+    }
+    function clearFilters() {
+      activeBrand = 'all'; activeSize = 'all';
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-brand="all"]').classList.add('active');
+      document.querySelector('[data-size="all"]').classList.add('active');
+      applyFilters();
+    }
+    function applyFilters() {
+      filteredProducts = allProducts.filter(p => {
+        const brandMatch = activeBrand === 'all' || (p.brand || '').toLowerCase().includes(activeBrand.toLowerCase());
+        const sizeMatch  = activeSize === 'all' || (p.sizes && p.sizes.includes(activeSize));
+        return brandMatch && sizeMatch;
+      });
+      document.getElementById('productCount').textContent = filteredProducts.length;
+      renderGrid(filteredProducts);
+      initCardAnimations();
+    }
+
+    // Render
+    function renderGrid(products) {
+      const grid = document.getElementById('productsGrid');
+      if (!products || products.length === 0) {
+        grid.innerHTML = `<div class="no-results"><p class="no-results-title">SIN RESULTADOS</p><p class="no-results-sub">Probá con otros filtros o limpiá la búsqueda.</p></div>`;
+        return;
+      }
+      grid.innerHTML = products.map(p => buildCard(p)).join('');
+    }
+
+    function buildCard(p) {
+      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80';
+      const badge = p.badge ? `<span class="card-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
+      const adminBtns = `<div class="card-admin-actions">
+        <button class="card-admin-btn card-edit-btn" onclick="openEditModal(event,'${p.id}')" title="Editar">✎</button>
+        <button class="card-admin-btn card-delete-btn" onclick="openDeleteModal(event,'${p.id}','${esc(p.name)}')" title="Eliminar">✕</button>
+      </div>`;
+      return `<div class="product-card" onclick="openProductModal('${p.id}')" data-id="${p.id}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${img}" alt="${esc(p.name)}" loading="lazy">
+          <div class="card-img-overlay"></div><div class="card-glow"></div>
+        </div>
+        <div class="card-body">
+          <p class="card-brand">${esc(p.brand||'')}</p>
+          <h3 class="card-name">${esc(p.name)}</h3>
+          <div class="card-footer"><span class="card-price">${p.price||'$0'}</span><span class="card-cta">VER MÁS</span></div>
+        </div>
+        ${badge}${adminBtns}
+      </div>`;
+    }
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // Product modal
+    function openProductModal(id) {
+      const p = allProducts.find(x => x.id == id);
+      if (!p) return;
+      currentModalProduct = p; selectedModalSize = null;
+      document.getElementById('modalProductImg').src = (p.images && p.images[0]) ? p.images[0] : '';
+      document.getElementById('modalProductName').textContent = p.name;
+      document.getElementById('modalProductName2').textContent = p.name;
+      document.getElementById('modalProductBrand').textContent = p.brand || '';
+      document.getElementById('modalProductPrice').textContent = p.price || '';
+      document.getElementById('modalProductDesc').textContent = p.description || '';
+      const badgeEl = document.getElementById('modalProductBadge');
+      if (p.badge) { badgeEl.textContent = p.badge; badgeEl.className = `product-modal-badge ${p.badge.toLowerCase()}`; badgeEl.style.display = 'inline-block'; }
+      else badgeEl.style.display = 'none';
+      const sizesSection = document.getElementById('modalSizesSection');
+      if (p.sizes && p.sizes.length > 0) {
+        sizesSection.style.display = 'block';
+        document.getElementById('modalSizesPills').innerHTML = p.sizes.map(s => `<button type="button" class="size-pill" onclick="selectSize('${esc(s)}')">${esc(s)}</button>`).join('');
+      } else sizesSection.style.display = 'none';
+      updateWaLink();
+      openModal('productModal');
+    }
+    function selectSize(size) {
+      selectedModalSize = size;
+      document.querySelectorAll('#modalSizesPills .size-pill').forEach(p => p.classList.toggle('selected', p.textContent === size));
+      updateWaLink();
+    }
+    function updateWaLink() {
+      if (!currentModalProduct) return;
+      const sizePart = selectedModalSize ? `, talle ${selectedModalSize}` : '';
+      const text = encodeURIComponent(`Hola DRACO! 👟 Me interesa: ${currentModalProduct.name} - ${currentModalProduct.price}${sizePart}. ¿Está disponible?`);
+      document.getElementById('modalWaBtn').href = `https://wa.me/${WA_NUMBER}?text=${text}`;
+    }
+    function closeProductModal() { closeModal('productModal'); }
+
+    // Login
+    function handleAdminNavClick() { if (isAdmin) adminLogout(); else openLoginModal(); }
+    function openLoginModal() { openModal('loginModal'); }
+    function closeLoginModal() { closeModal('loginModal'); }
+    function handleLogin(e) {
+      e.preventDefault();
+      if (document.getElementById('loginUser').value.trim() === 'admin' && document.getElementById('loginPass').value === 'admin') {
+        sessionStorage.setItem('draco_adm', '1');
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        document.getElementById('btnAdminNav').textContent = 'ADMIN ✓';
+        document.getElementById('btnAdminNav').classList.add('logged');
+        closeLoginModal();
+        renderGrid(filteredProducts);
+        showToast('Modo admin activado ✓', 'success');
+      } else {
+        showToast('Credenciales incorrectas', 'error');
+        document.getElementById('loginPass').value = '';
+      }
+    }
+
+    // Admin form
+    function openAdminModal() {
+      if (!isAdmin) return;
+      document.getElementById('adminModalTitle').textContent = 'NUEVO PRODUCTO';
+      document.getElementById('adminForm').reset();
+      document.getElementById('editProductId').value = '';
+      document.getElementById('imgPreview').classList.remove('visible');
+      document.getElementById('adminSubmitBtn').textContent = 'GUARDAR PRODUCTO';
+      updateSizeToggles([]);
+      openModal('adminModal');
+    }
+    function openEditModal(e, id) {
+      e.stopPropagation();
+      if (!isAdmin) return;
+      const p = allProducts.find(x => x.id == id);
+      if (!p) return;
+      document.getElementById('adminModalTitle').textContent = 'EDITAR PRODUCTO';
+      document.getElementById('editProductId').value = p.id;
+      document.getElementById('pName').value = p.name || '';
+      document.getElementById('pPrice').value = (p.price || '').replace('$','').replace(/\./g,'');
+      document.getElementById('pBrand').value = p.brand || '';
+      document.getElementById('pBadge').value = p.badge || '';
+      document.getElementById('pDesc').value = p.description || '';
+      document.getElementById('pStock').value = p.stock || 0;
+      updateSizeToggles(p.sizes || []);
+      if (p.images && p.images[0]) { document.getElementById('pImgUrl').value = p.images[0]; previewImgUrl(p.images[0]); }
+      document.getElementById('adminSubmitBtn').textContent = 'ACTUALIZAR PRODUCTO';
+      openModal('adminModal');
+    }
+    function closeAdminModal() { closeModal('adminModal'); }
+    async function handleProductSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('adminSubmitBtn');
+      btn.textContent = 'GUARDANDO...'; btn.disabled = true;
+      try {
+        const editId = document.getElementById('editProductId').value;
+        const isEdit = !!editId;
+        const rawPrice = document.getElementById('pPrice').value.replace(/\D/g,'');
+        const priceFormatted = rawPrice ? '$' + Number(rawPrice).toLocaleString('es-AR') : '';
+        const sizes = Array.from(document.querySelectorAll('#sizeToggleGroup .size-toggle.active')).map(b => b.dataset.size);
+        let imageUrl = document.getElementById('pImgUrl').value.trim();
+        if (editImgTab === 'file') {
+          const file = document.getElementById('pImgFile').files[0];
+          if (file) imageUrl = await uploadImage(file);
+        }
+        const productData = {
+          name: document.getElementById('pName').value.trim(),
+          price: priceFormatted,
+          brand: document.getElementById('pBrand').value.trim(),
+          badge: document.getElementById('pBadge').value,
+          description: document.getElementById('pDesc').value.trim(),
+          stock: parseInt(document.getElementById('pStock').value) || 0,
+          sizes, images: imageUrl ? [imageUrl] : [],
+        };
+        await saveProduct(productData, isEdit, editId);
+        closeAdminModal();
+      } catch(err) { showToast('Error: ' + err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = document.getElementById('editProductId').value ? 'ACTUALIZAR PRODUCTO' : 'GUARDAR PRODUCTO'; }
+    }
+    function updateSizeToggles(selected=[]) {
+      document.getElementById('sizeToggleGroup').innerHTML = SIZES_ZAP.map(s =>
+        `<button type="button" class="size-toggle${selected.includes(s)?' active':''}" data-size="${s}" onclick="toggleSize(this)">${s}</button>`
+      ).join('');
+    }
+    function toggleSize(btn) { btn.classList.toggle('active'); }
+    function switchImgTab(tab, btn) {
+      editImgTab = tab;
+      document.querySelectorAll('.img-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.img-tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+    }
+    function previewImgUrl(url) { const p = document.getElementById('imgPreview'); if (url) { p.src=url; p.classList.add('visible'); } else p.classList.remove('visible'); }
+    function previewImgFile(input) { const p = document.getElementById('imgPreview'); if (input.files&&input.files[0]) { const r=new FileReader(); r.onload=e=>{p.src=e.target.result;p.classList.add('visible');}; r.readAsDataURL(input.files[0]); } }
+    document.getElementById('pPrice').addEventListener('input', function(){ this.value=this.value.replace(/[^0-9]/g,''); });
+
+    // Delete
+    function openDeleteModal(e, id, name) { e.stopPropagation(); deleteTargetId=id; document.getElementById('deleteProductName').textContent=name; openModal('deleteModal'); }
+    function closeDeleteModal() { closeModal('deleteModal'); deleteTargetId=null; }
+    async function confirmDelete() { if (!deleteTargetId) return; closeDeleteModal(); await deleteProduct(deleteTargetId); }
+
+    // Modal helpers
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.addEventListener('click', e => { if(e.target===b){ b.classList.remove('open'); document.body.style.overflow=''; } }));
+    document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m=>{ m.classList.remove('open'); document.body.style.overflow=''; }); });
+
+    // Toast
+    let toastTimer;
+    function showToast(msg, type='') { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'+(type?' '+type:''); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2800); }
+
+    // Nav
+    function toggleMobileMenu() { document.getElementById('navMobileMenu').classList.toggle('open'); }
+    function navigateTo(e, url) { e.preventDefault(); gsap.to(document.getElementById('pageOverlay'),{opacity:1,duration:0.35,ease:'power2.in',onComplete:()=>{window.location.href=url;}}); }
+
+    // Cursor
+    function initCursor() {
+      const cur = document.getElementById('cursor');
+      if (!cur || window.matchMedia('(pointer:coarse)').matches) return;
+      document.addEventListener('mousemove', e => gsap.to(cur, { x:e.clientX, y:e.clientY, duration:0.08, ease:'none' }));
+      document.querySelectorAll('a,button,.product-card,.size-pill,.size-toggle,.filter-pill').forEach(el => {
+        el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+        el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+      });
+    }
+
+    function initCardAnimations() {
+      gsap.utils.toArray('.product-card').forEach((card, i) => {
+        gsap.from(card, { scrollTrigger:{trigger:card,start:'top 90%',once:true}, y:30, opacity:0, duration:0.5, delay:(i%4)*0.07, ease:'power3.out' });
+      });
+    }
+
+    function initAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.to(document.getElementById('pageOverlay'), { opacity:0, duration:0.5, ease:'power2.out', delay:0.1 });
+      gsap.from('.page-header-inner > *', { y:30, opacity:0, stagger:0.12, duration:0.7, ease:'power3.out', delay:0.3 });
+      ScrollTrigger.create({ start:'top -60', onEnter:()=>document.getElementById('nav').classList.add('scrolled'), onLeaveBack:()=>document.getElementById('nav').classList.remove('scrolled') });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      restoreSession();
+      initAnimations();
+      initCursor();
+      updateSizeToggles([]);
+      loadProducts();
+    });
+  </script>
+</body>
+</html>
