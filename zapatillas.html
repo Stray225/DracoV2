@@ -11,12 +11,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: auto; }
     body { background: #0a0a0a; color: #f0ede8; font-family: 'DM Sans', sans-serif; overflow-x: hidden; cursor: none; }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
@@ -36,16 +35,15 @@
 
     /* NAV */
     .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 20px 40px; display: flex; align-items: center; transition: padding 0.4s var(--ease), background 0.4s var(--ease); }
-    .nav.scrolled { padding: 12px 40px; background: rgba(10,10,10,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(224,32,32,0.15); }
+    .nav.scrolled { padding: 12px 40px; background: rgba(10,10,10,0.97); border-bottom: 1px solid rgba(224,32,32,0.12); }
     .nav-inner { display: flex; align-items: center; width: 100%; }
     .nav-logo { flex-shrink: 0; }
-    .logo-img { height: 36px; width: auto; filter: drop-shadow(0 0 8px rgba(224,32,32,0.5)); transition: filter 0.3s; }
-    .logo-img:hover { filter: drop-shadow(0 0 16px rgba(224,32,32,0.9)); }
+    .logo-img { height: 36px; width: auto; filter: drop-shadow(0 0 8px rgba(224,32,32,0.5)); }
     .nav-links { display: flex; gap: 36px; margin: 0 auto; }
     .nav-link { font-family: var(--font-d); font-size: 16px; letter-spacing: 2px; color: rgba(240,237,232,0.7); position: relative; transition: color 0.3s; }
-    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 100%; height: 2px; background: var(--red); transition: right 0.3s var(--ease); }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: var(--red); transform: scaleX(0); transform-origin: left; transition: transform 0.3s var(--ease); }
     .nav-link:hover, .nav-link.active { color: var(--bone); }
-    .nav-link:hover::after, .nav-link.active::after { right: 0; }
+    .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
     .nav-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
     .btn-admin-nav { font-family: var(--font-d); font-size: 14px; letter-spacing: 2px; color: var(--graytxt); padding: 6px 14px; border: 1px solid var(--gray3); border-radius: var(--radius); transition: all 0.3s; }
     .btn-admin-nav:hover { color: var(--bone); border-color: var(--red); }
@@ -212,7 +210,7 @@
     .toast.error { border-color: var(--red); color: var(--red); }
 
     /* MODALS */
-    .modal-backdrop { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-backdrop.open { opacity: 1; pointer-events: all; }
     .modal-box { background: var(--gray1); border: 1px solid var(--gray3); border-radius: 6px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(0.97); transition: transform 0.3s var(--ease); }
     .modal-backdrop.open .modal-box { transform: none; }
