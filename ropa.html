@@ -29,8 +29,8 @@
       --ease: cubic-bezier(0.4,0,0.2,1); --radius: 4px;
     }
 
-    .cursor { position: fixed; width: 10px; height: 10px; background: var(--red); border-radius: 50%; pointer-events: none; z-index: 99999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s; }
-    .cursor.hover { width: 24px; height: 24px; background: rgba(224,32,32,0.4); }
+    .cursor { position: fixed; width: 8px; height: 8px; background: var(--red); border-radius: 50%; pointer-events: none; z-index: 99999; top: 0; left: 0; will-change: transform; transition: width 0.15s, height 0.15s; }
+    .cursor.hover { width: 20px; height: 20px; background: rgba(224,32,32,0.35); }
     .page-overlay { position: fixed; inset: 0; background: var(--black); z-index: 9999; pointer-events: none; opacity: 0; }
     ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--black); } ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
 
@@ -60,29 +60,35 @@
 
     /* PAGE HEADER */
     .page-header {
-      padding: 130px 40px 48px;
+      padding: 140px 40px 64px;
+      text-align: center;
       position: relative; overflow: hidden;
       border-bottom: 1px solid var(--gray2);
     }
     .page-header::after {
       content: 'ROPA';
       position: absolute; font-family: var(--font-d);
-      font-size: clamp(120px, 26vw, 340px);
-      color: rgba(255,255,255,0.022);
-      bottom: -40px; right: -10px;
-      pointer-events: none; white-space: nowrap; letter-spacing: 4px; line-height: 1;
+      font-size: clamp(120px, 28vw, 380px);
+      color: rgba(255,255,255,0.018);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none; white-space: nowrap; letter-spacing: 6px; line-height: 1;
+      z-index: 0;
     }
-    .page-header-inner {
+    .page-header-label {
+      font-family: var(--font-d); font-size: 11px; letter-spacing: 6px; color: var(--red);
+      margin-bottom: 14px; position: relative; z-index: 1;
+    }
+    .page-header-title {
+      font-family: var(--font-d); font-size: clamp(64px, 10vw, 136px);
+      line-height: 0.88; letter-spacing: -1px;
       position: relative; z-index: 1;
-      display: flex; align-items: flex-end; justify-content: space-between;
     }
-    .page-header-left {}
-    .page-header-label { font-family: var(--font-d); font-size: 11px; letter-spacing: 6px; color: var(--red); margin-bottom: 10px; }
-    .page-header-title { font-family: var(--font-d); font-size: clamp(60px, 11vw, 130px); line-height: 0.82; letter-spacing: -1px; }
-    .page-header-right { text-align: right; padding-bottom: 8px; }
-    .page-header-count-big { font-family: var(--font-d); font-size: clamp(40px, 6vw, 72px); color: rgba(224,32,32,0.25); line-height: 1; }
-    .page-header-meta { font-size: 12px; color: var(--graytxt); font-weight: 300; letter-spacing: 2px; }
-    .page-header-count { color: var(--red); }
+    .page-header-meta {
+      font-size: 12px; color: var(--graytxt); letter-spacing: 2px; font-weight: 300;
+      margin-top: 18px; position: relative; z-index: 1;
+    }
+    .page-header-count { font-family: var(--font-d); font-size: 14px; color: var(--red); }
 
     /* MARQUEE */
     .brands-marquee { overflow: hidden; padding: 13px 0; background: var(--red); }
@@ -105,39 +111,36 @@
     .filter-clear:hover { color: var(--red); border-color: rgba(224,32,32,0.3); }
 
     /* PRODUCT GRID */
-    .products-section { padding: 3px 0 80px; }
-    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-
-    .product-card { position: relative; overflow: hidden; background: #060606; cursor: none; }
-    .product-card.featured { grid-column: span 2; }
-
-    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 2/3; overflow: hidden; }
-    .product-card.featured .card-img-wrap { aspect-ratio: 4/3; }
-    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--ease); display: block; }
-    .product-card:hover .card-img { transform: scale(1.07); }
-
-    .card-static-overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, rgba(6,6,6,0.6) 100%); }
-    .card-static-brand { position: absolute; bottom: 14px; left: 16px; z-index: 2; font-size: 9px; letter-spacing: 4px; color: rgba(240,237,232,0.45); text-transform: uppercase; }
-
-    .card-overlay {
-      position: absolute; inset: 0; z-index: 3;
-      background: rgba(6,6,6,0.88);
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 32px 28px 28px;
-      transform: translateY(101%);
-      transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1);
-      backdrop-filter: blur(1px);
+    .products-section { padding: 0 0 80px; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: #161616;
     }
-    .product-card:hover .card-overlay { transform: translateY(0); }
 
-    .overlay-brand { font-size: 10px; letter-spacing: 5px; color: var(--red); text-transform: uppercase; margin-bottom: 12px; }
-    .overlay-name { font-family: var(--font-d); font-size: clamp(30px, 3.2vw, 50px); line-height: 0.88; letter-spacing: 1px; color: var(--bone); margin-bottom: 20px; }
-    .product-card.featured .overlay-name { font-size: clamp(36px, 4.5vw, 64px); }
-    .overlay-divider { width: 36px; height: 1px; background: rgba(240,237,232,0.2); margin-bottom: 20px; }
-    .overlay-footer { display: flex; align-items: center; justify-content: space-between; }
-    .overlay-price { font-family: var(--font-d); font-size: clamp(20px, 2vw, 28px); color: var(--red); }
-    .overlay-cta { font-family: var(--font-d); font-size: 11px; letter-spacing: 3px; color: var(--bone); padding: 10px 18px; border: 1px solid rgba(240,237,232,0.25); border-radius: 2px; transition: all 0.25s; }
-    .overlay-cta:hover { background: var(--red); border-color: var(--red); }
+    /* CATALOG CARD */
+    .product-card {
+      position: relative; overflow: hidden;
+      background: #0a0a0a; cursor: none;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      contain: layout style paint;
+    }
+    .product-card.visible { opacity: 1; transform: none; }
+
+    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; background: #111; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; will-change: transform; display: block; }
+    .product-card:hover .card-img { transform: scale(1.04); }
+    .product-card:hover { box-shadow: inset 0 0 0 1px rgba(224,32,32,0.3); }
+
+    .card-info { padding: 11px 13px 15px; border-top: 1px solid #131313; }
+    .card-brand-line { font-size: 9px; letter-spacing: 4px; color: var(--graytxt); text-transform: uppercase; margin-bottom: 5px; }
+    .card-name { font-family: var(--font-d); font-size: clamp(13px, 1.35vw, 20px); line-height: 1.05; letter-spacing: 0.5px; color: var(--bone); margin-bottom: 10px; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card-price { font-family: var(--font-d); font-size: clamp(13px, 1.2vw, 17px); color: var(--red); }
+    .card-arrow { font-size: 13px; color: rgba(255,255,255,0.18); transition: color 0.2s, transform 0.2s; }
+    .product-card:hover .card-arrow { color: var(--red); transform: translate(2px,-2px); }
 
     .card-badge { position: absolute; top: 14px; left: 14px; z-index: 5; font-family: var(--font-d); font-size: 10px; letter-spacing: 2px; padding: 4px 10px; border-radius: 2px; }
     .card-badge.hot { background: var(--red); color: var(--bone); }
@@ -250,24 +253,25 @@
     @keyframes skeleton-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
     /* RESPONSIVE */
+    @media (max-width: 1280px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 900px) {
       .nav { padding: 16px 20px; } .nav.scrolled { padding: 10px 20px; }
       .nav-links { display: none; } .nav-hamburger { display: flex; }
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
-      .product-card.featured { grid-column: span 2; }
-      .page-header-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .page-header-right { text-align: left; }
-      .page-header { padding: 120px 20px 48px; }
-      .products-section { padding: 3px 0 60px; }
+      .products-grid { grid-template-columns: repeat(3, 1fr); }
+      .filters-inner { gap: 16px; }
+      .page-header { padding: 110px 20px 48px; }
+      .products-section { padding: 0 0 60px; }
       .filters-bar { padding: 16px 20px; }
       .footer-top { grid-template-columns: 1fr; text-align: center; }
       .footer-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
       .footer-social { justify-content: center; }
     }
+    @media (max-width: 600px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-name { font-size: 12px; }
+    }
     @media (max-width: 480px) {
-      .products-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
-      .product-card.featured { grid-column: span 2; }
-      .overlay-name { font-size: clamp(22px, 6vw, 32px); }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1px; }
       .cursor { display: none; } body, button, a { cursor: auto; }
       .product-modal-inner { grid-template-columns: 1fr; }
     }
@@ -307,16 +311,9 @@
 
   <!-- PAGE HEADER -->
   <header class="page-header">
-    <div class="page-header-inner">
-      <div class="page-header-left">
-        <p class="page-header-label">— COLECCIÓN 2025</p>
-        <h1 class="page-header-title">ROPA &<br>ACCES.</h1>
-      </div>
-      <div class="page-header-right">
-        <p class="page-header-count-big" id="productCount">0</p>
-        <p class="page-header-meta">productos disponibles</p>
-      </div>
-    </div>
+    <p class="page-header-label">— COLECCIÓN 2025</p>
+    <h1 class="page-header-title">ROPA &<br>ACCESORIOS</h1>
+    <p class="page-header-meta"><span class="page-header-count" id="productCount">0</span> productos disponibles</p>
   </header>
 
   <!-- MARQUEE -->
@@ -618,24 +615,20 @@
     function buildCard(p, index) {
       const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80';
       const badge = p.badge ? `<span class="card-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
-      const isFeatured = index % 7 === 0;
       const adminBtns = `<div class="card-admin-actions">
         <button class="card-admin-btn card-edit-btn" onclick="openEditModal(event,'${p.id}')" title="Editar">✎</button>
         <button class="card-admin-btn card-delete-btn" onclick="openDeleteModal(event,'${p.id}','${esc(p.name)}')" title="Eliminar">✕</button>
       </div>`;
-      return `<div class="product-card${isFeatured ? ' featured' : ''}" onclick="openProductModal('${p.id}')" data-id="${p.id}">
+      return `<div class="product-card" onclick="openProductModal('${p.id}')" data-id="${p.id}">
         <div class="card-img-wrap">
           <img class="card-img" src="${img}" alt="${esc(p.name)}" loading="lazy">
-          <div class="card-static-overlay"></div>
         </div>
-        <p class="card-static-brand">${esc(p.brand||'DRACO')}</p>
-        <div class="card-overlay">
-          <p class="overlay-brand">${esc(p.brand||'DRACO')}</p>
-          <h3 class="overlay-name">${esc(p.name)}</h3>
-          <div class="overlay-divider"></div>
-          <div class="overlay-footer">
-            <span class="overlay-price">${p.price||'$0'}</span>
-            <span class="overlay-cta">CONSULTAR ↗</span>
+        <div class="card-info">
+          <p class="card-brand-line">${esc(p.brand||'DRACO')}</p>
+          <h3 class="card-name">${esc(p.name)}</h3>
+          <div class="card-footer">
+            <span class="card-price">${p.price||'$0'}</span>
+            <span class="card-arrow">↗</span>
           </div>
         </div>
         ${badge}${adminBtns}
@@ -789,25 +782,34 @@
 
     function initCursor() {
       const cur = document.getElementById('cursor');
-      if (!cur || window.matchMedia('(pointer:coarse)').matches) return;
-      document.addEventListener('mousemove', e => gsap.to(cur, { x:e.clientX, y:e.clientY, duration:0.08, ease:'none' }));
-      document.querySelectorAll('a,button,.product-card,.size-pill,.size-toggle,.filter-pill').forEach(el => {
-        el.addEventListener('mouseenter', () => cur.classList.add('hover'));
-        el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+      if (!cur || window.matchMedia('(pointer:coarse)').matches) { if(cur) cur.style.display='none'; return; }
+      document.addEventListener('mousemove', e => {
+        cur.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+      }, { passive: true });
+      document.addEventListener('mouseover', e => {
+        const t = e.target.closest('a,button,.product-card,.size-pill,.size-toggle,.filter-pill');
+        cur.classList.toggle('hover', !!t);
       });
     }
 
     function initCardAnimations() {
-      gsap.utils.toArray('.product-card').forEach((card, i) => {
-        gsap.from(card, { scrollTrigger:{trigger:card,start:'top 90%',once:true}, y:30, opacity:0, duration:0.5, delay:(i%4)*0.07, ease:'power3.out' });
+      const obs = new IntersectionObserver((entries, observer) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.05, rootMargin: '0px 0px -10px 0px' });
+      document.querySelectorAll('.product-card').forEach((c, i) => {
+        c.style.transitionDelay = (i % 4) * 0.05 + 's';
+        obs.observe(c);
       });
     }
 
     function initAnimations() {
-      gsap.registerPlugin(ScrollTrigger);
       gsap.to(document.getElementById('pageOverlay'), { opacity:0, duration:0.5, ease:'power2.out', delay:0.1 });
-      gsap.from('.page-header-inner > *', { y:30, opacity:0, stagger:0.12, duration:0.7, ease:'power3.out', delay:0.3 });
-      ScrollTrigger.create({ start:'top -60', onEnter:()=>document.getElementById('nav').classList.add('scrolled'), onLeaveBack:()=>document.getElementById('nav').classList.remove('scrolled') });
+      gsap.from('.page-header > *', { y:24, opacity:0, stagger:0.1, duration:0.65, ease:'power3.out', delay:0.3 });
+      window.addEventListener('scroll', () => {
+        document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+      }, { passive: true });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
