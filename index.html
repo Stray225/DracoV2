@@ -154,7 +154,7 @@
     /* ── HERO ─────────────────────────────────────── */
     .hero {
       position: relative;
-      height: 52vh; min-height: 420px;
+      height: 68vh; min-height: 540px;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
@@ -166,8 +166,8 @@
       background-size: cover;
       background-position: center;
       opacity: 0;
-      transition: opacity 1.2s ease;
-      filter: brightness(0.18) saturate(0.8);
+      transition: opacity 1.4s ease;
+      filter: brightness(0.22) saturate(0.7);
     }
     .hero-slide.active { opacity: 1; }
     .hero-overlay {
@@ -188,16 +188,16 @@
     }
     .hero-logo-wrap { position: relative; display: inline-block; }
     .hero-logo {
-      height: 80px; width: auto;
-      filter: drop-shadow(0 0 30px rgba(224,32,32,0.7)) drop-shadow(0 0 60px rgba(224,32,32,0.3));
+      height: clamp(100px, 16vw, 180px); width: auto;
+      filter: drop-shadow(0 0 40px rgba(224,32,32,0.8)) drop-shadow(0 0 80px rgba(224,32,32,0.4)) drop-shadow(0 0 120px rgba(224,32,32,0.2));
     }
     .hero-glow {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 200px; height: 80px;
-      background: radial-gradient(ellipse, rgba(224,32,32,0.4) 0%, transparent 70%);
-      filter: blur(20px);
+      width: 360px; height: 140px;
+      background: radial-gradient(ellipse, rgba(224,32,32,0.35) 0%, rgba(224,32,32,0.1) 40%, transparent 70%);
+      filter: blur(32px);
       animation: glowPulse 3s ease-in-out infinite;
       pointer-events: none;
     }
