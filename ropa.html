@@ -60,24 +60,36 @@
 
     /* PAGE HEADER */
     .page-header {
-      padding: 140px 40px 60px;
-      border-bottom: 1px solid var(--gray2);
-      background: linear-gradient(to bottom, rgba(224,32,32,0.04) 0%, transparent 100%);
+      padding: 130px 40px 48px;
       position: relative; overflow: hidden;
+      border-bottom: 1px solid var(--gray2);
     }
-    .page-header::before {
+    .page-header::after {
       content: 'ROPA';
       position: absolute; font-family: var(--font-d);
-      font-size: clamp(100px, 22vw, 280px);
-      color: rgba(255,255,255,0.025);
-      bottom: -30px; left: 40px;
-      pointer-events: none; white-space: nowrap; letter-spacing: 8px; line-height: 1;
+      font-size: clamp(120px, 26vw, 340px);
+      color: rgba(255,255,255,0.022);
+      bottom: -40px; right: -10px;
+      pointer-events: none; white-space: nowrap; letter-spacing: 4px; line-height: 1;
     }
-    .page-header-inner { position: relative; z-index: 1; }
-    .page-header-label { font-family: var(--font-d); font-size: 12px; letter-spacing: 6px; color: var(--red); margin-bottom: 12px; }
-    .page-header-title { font-family: var(--font-d); font-size: clamp(52px, 10vw, 120px); line-height: 0.85; }
-    .page-header-meta { margin-top: 20px; font-size: 14px; color: var(--graytxt); font-weight: 300; }
-    .page-header-count { color: var(--red); font-weight: 500; }
+    .page-header-inner {
+      position: relative; z-index: 1;
+      display: flex; align-items: flex-end; justify-content: space-between;
+    }
+    .page-header-left {}
+    .page-header-label { font-family: var(--font-d); font-size: 11px; letter-spacing: 6px; color: var(--red); margin-bottom: 10px; }
+    .page-header-title { font-family: var(--font-d); font-size: clamp(60px, 11vw, 130px); line-height: 0.82; letter-spacing: -1px; }
+    .page-header-right { text-align: right; padding-bottom: 8px; }
+    .page-header-count-big { font-family: var(--font-d); font-size: clamp(40px, 6vw, 72px); color: rgba(224,32,32,0.25); line-height: 1; }
+    .page-header-meta { font-size: 12px; color: var(--graytxt); font-weight: 300; letter-spacing: 2px; }
+    .page-header-count { color: var(--red); }
+
+    /* MARQUEE */
+    .brands-marquee { overflow: hidden; padding: 13px 0; background: var(--red); }
+    .marquee-track { display: flex; gap: 0; white-space: nowrap; animation: marqueeScroll 18s linear infinite; width: max-content; }
+    .marquee-track span { font-family: var(--font-d); font-size: 12px; letter-spacing: 4px; color: rgba(255,255,255,0.85); padding: 0 20px; }
+    .marquee-track .dot { color: rgba(255,255,255,0.4); padding: 0 4px; }
+    @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
     /* FILTERS */
     .filters-bar { padding: 24px 40px; border-bottom: 1px solid var(--gray2); background: var(--gray1); position: sticky; top: 60px; z-index: 100; }
@@ -89,43 +101,45 @@
     .filter-pill { padding: 6px 14px; border: 1px solid var(--gray3); border-radius: 2px; font-family: var(--font-d); font-size: 13px; letter-spacing: 1px; color: var(--graytxt); white-space: nowrap; transition: all 0.2s; cursor: none; }
     .filter-pill:hover { border-color: var(--gray4); color: var(--bone); }
     .filter-pill.active { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.1); }
-    .filter-sep { width: 1px; height: 24px; background: var(--gray3); flex-shrink: 0; }
     .filter-clear { font-family: var(--font-d); font-size: 11px; letter-spacing: 2px; color: var(--graytxt); padding: 6px 10px; border: 1px solid var(--gray3); border-radius: 2px; transition: all 0.2s; cursor: none; }
     .filter-clear:hover { color: var(--red); border-color: rgba(224,32,32,0.3); }
 
     /* PRODUCT GRID */
-    .products-section { padding: 48px 40px 80px; }
-    .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .products-section { padding: 3px 0 80px; }
+    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
 
-    .product-card {
-      position: relative; overflow: hidden;
-      background: var(--black);
-      cursor: none;
-      transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+    .product-card { position: relative; overflow: hidden; background: #060606; cursor: none; }
+    .product-card.featured { grid-column: span 2; }
+
+    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 2/3; overflow: hidden; }
+    .product-card.featured .card-img-wrap { aspect-ratio: 4/3; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--ease); display: block; }
+    .product-card:hover .card-img { transform: scale(1.07); }
+
+    .card-static-overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, rgba(6,6,6,0.6) 100%); }
+    .card-static-brand { position: absolute; bottom: 14px; left: 16px; z-index: 2; font-size: 9px; letter-spacing: 4px; color: rgba(240,237,232,0.45); text-transform: uppercase; }
+
+    .card-overlay {
+      position: absolute; inset: 0; z-index: 3;
+      background: rgba(6,6,6,0.88);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 32px 28px 28px;
+      transform: translateY(101%);
+      transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+      backdrop-filter: blur(1px);
     }
-    .product-card:hover { transform: translateY(-6px); z-index: 2; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(224,32,32,0.25); }
+    .product-card:hover .card-overlay { transform: translateY(0); }
 
-    .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 3/4; }
-    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s var(--ease); }
-    .product-card:hover .card-img { transform: scale(1.08); }
+    .overlay-brand { font-size: 10px; letter-spacing: 5px; color: var(--red); text-transform: uppercase; margin-bottom: 12px; }
+    .overlay-name { font-family: var(--font-d); font-size: clamp(30px, 3.2vw, 50px); line-height: 0.88; letter-spacing: 1px; color: var(--bone); margin-bottom: 20px; }
+    .product-card.featured .overlay-name { font-size: clamp(36px, 4.5vw, 64px); }
+    .overlay-divider { width: 36px; height: 1px; background: rgba(240,237,232,0.2); margin-bottom: 20px; }
+    .overlay-footer { display: flex; align-items: center; justify-content: space-between; }
+    .overlay-price { font-family: var(--font-d); font-size: clamp(20px, 2vw, 28px); color: var(--red); }
+    .overlay-cta { font-family: var(--font-d); font-size: 11px; letter-spacing: 3px; color: var(--bone); padding: 10px 18px; border: 1px solid rgba(240,237,232,0.25); border-radius: 2px; transition: all 0.25s; }
+    .overlay-cta:hover { background: var(--red); border-color: var(--red); }
 
-    .card-img-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(10,10,10,0) 30%, rgba(10,10,10,0.55) 60%, rgba(10,10,10,0.97) 100%);
-    }
-
-    .card-red-line { position: absolute; bottom: 0; left: 0; right: 100%; height: 2px; background: var(--red); z-index: 3; transition: right 0.5s var(--ease); }
-    .product-card:hover .card-red-line { right: 0; }
-
-    .card-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 18px 20px; z-index: 2; }
-    .card-brand { font-size: 9px; letter-spacing: 4px; color: rgba(240,237,232,0.45); margin-bottom: 5px; text-transform: uppercase; }
-    .card-name { font-family: var(--font-d); font-size: clamp(17px, 1.7vw, 22px); line-height: 0.95; letter-spacing: 1px; margin-bottom: 12px; color: var(--bone); }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; }
-    .card-price { font-family: var(--font-d); font-size: clamp(15px, 1.5vw, 19px); color: var(--red); }
-    .card-arrow { width: 30px; height: 30px; border: 1px solid rgba(240,237,232,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: rgba(240,237,232,0.35); transition: all 0.35s var(--ease); }
-    .product-card:hover .card-arrow { border-color: var(--red); color: var(--bone); background: var(--red); transform: rotate(45deg); }
-
-    .card-badge { position: absolute; top: 12px; left: 12px; z-index: 3; font-family: var(--font-d); font-size: 10px; letter-spacing: 2px; padding: 4px 10px; border-radius: 2px; }
+    .card-badge { position: absolute; top: 14px; left: 14px; z-index: 5; font-family: var(--font-d); font-size: 10px; letter-spacing: 2px; padding: 4px 10px; border-radius: 2px; }
     .card-badge.hot { background: var(--red); color: var(--bone); }
     .card-badge.new { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
     .card-badge.drop { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
@@ -236,20 +250,24 @@
     @keyframes skeleton-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
     /* RESPONSIVE */
-    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 900px) {
       .nav { padding: 16px 20px; } .nav.scrolled { padding: 10px 20px; }
       .nav-links { display: none; } .nav-hamburger { display: flex; }
       .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-card.featured { grid-column: span 2; }
+      .page-header-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .page-header-right { text-align: left; }
       .page-header { padding: 120px 20px 48px; }
-      .products-section { padding: 32px 20px 60px; }
+      .products-section { padding: 3px 0 60px; }
       .filters-bar { padding: 16px 20px; }
       .footer-top { grid-template-columns: 1fr; text-align: center; }
       .footer-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
       .footer-social { justify-content: center; }
     }
     @media (max-width: 480px) {
-      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .products-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+      .product-card.featured { grid-column: span 2; }
+      .overlay-name { font-size: clamp(22px, 6vw, 32px); }
       .cursor { display: none; } body, button, a { cursor: auto; }
       .product-modal-inner { grid-template-columns: 1fr; }
     }
@@ -290,11 +308,24 @@
   <!-- PAGE HEADER -->
   <header class="page-header">
     <div class="page-header-inner">
-      <p class="page-header-label">— COLECCIÓN</p>
-      <h1 class="page-header-title">ROPA &<br>ACCESORIOS</h1>
-      <p class="page-header-meta"><span class="page-header-count" id="productCount">0</span> productos disponibles</p>
+      <div class="page-header-left">
+        <p class="page-header-label">— COLECCIÓN 2025</p>
+        <h1 class="page-header-title">ROPA &<br>ACCES.</h1>
+      </div>
+      <div class="page-header-right">
+        <p class="page-header-count-big" id="productCount">0</p>
+        <p class="page-header-meta">productos disponibles</p>
+      </div>
     </div>
   </header>
+
+  <!-- MARQUEE -->
+  <div class="brands-marquee">
+    <div class="marquee-track">
+      <span>HOODIES</span><span class="dot">·</span><span>REMERAS</span><span class="dot">·</span><span>JOGGERS</span><span class="dot">·</span><span>JACKETS</span><span class="dot">·</span><span>GORRAS</span><span class="dot">·</span><span>ACCESORIOS</span><span class="dot">·</span><span>CREWNECK</span><span class="dot">·</span><span>OVERSIZED</span><span class="dot">·</span><span>STREETWEAR</span><span class="dot">·</span><span>DRACO</span><span class="dot">·</span>
+      <span>HOODIES</span><span class="dot">·</span><span>REMERAS</span><span class="dot">·</span><span>JOGGERS</span><span class="dot">·</span><span>JACKETS</span><span class="dot">·</span><span>GORRAS</span><span class="dot">·</span><span>ACCESORIOS</span><span class="dot">·</span><span>CREWNECK</span><span class="dot">·</span><span>OVERSIZED</span><span class="dot">·</span><span>STREETWEAR</span><span class="dot">·</span><span>DRACO</span><span class="dot">·</span>
+    </div>
+  </div>
 
   <!-- FILTERS — solo talle para ropa -->
   <div class="filters-bar">
@@ -581,27 +612,32 @@
         grid.innerHTML = `<div class="no-results"><p class="no-results-title">SIN RESULTADOS</p><p class="no-results-sub">Probá con otro talle o limpiá los filtros.</p></div>`;
         return;
       }
-      grid.innerHTML = products.map(p => buildCard(p)).join('');
+      grid.innerHTML = products.map((p, i) => buildCard(p, i)).join('');
     }
 
-    function buildCard(p) {
-      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80';
+    function buildCard(p, index) {
+      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80';
       const badge = p.badge ? `<span class="card-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
+      const isFeatured = index % 7 === 0;
       const adminBtns = `<div class="card-admin-actions">
         <button class="card-admin-btn card-edit-btn" onclick="openEditModal(event,'${p.id}')" title="Editar">✎</button>
         <button class="card-admin-btn card-delete-btn" onclick="openDeleteModal(event,'${p.id}','${esc(p.name)}')" title="Eliminar">✕</button>
       </div>`;
-      return `<div class="product-card" onclick="openProductModal('${p.id}')" data-id="${p.id}">
+      return `<div class="product-card${isFeatured ? ' featured' : ''}" onclick="openProductModal('${p.id}')" data-id="${p.id}">
         <div class="card-img-wrap">
           <img class="card-img" src="${img}" alt="${esc(p.name)}" loading="lazy">
-          <div class="card-img-overlay"></div>
+          <div class="card-static-overlay"></div>
         </div>
-        <div class="card-body">
-          <p class="card-brand">${esc(p.brand||'DRACO')}</p>
-          <h3 class="card-name">${esc(p.name)}</h3>
-          <div class="card-footer"><span class="card-price">${p.price||'$0'}</span><span class="card-arrow">↗</span></div>
+        <p class="card-static-brand">${esc(p.brand||'DRACO')}</p>
+        <div class="card-overlay">
+          <p class="overlay-brand">${esc(p.brand||'DRACO')}</p>
+          <h3 class="overlay-name">${esc(p.name)}</h3>
+          <div class="overlay-divider"></div>
+          <div class="overlay-footer">
+            <span class="overlay-price">${p.price||'$0'}</span>
+            <span class="overlay-cta">CONSULTAR ↗</span>
+          </div>
         </div>
-        <div class="card-red-line"></div>
         ${badge}${adminBtns}
       </div>`;
     }
