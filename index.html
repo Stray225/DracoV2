@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -25,11 +25,10 @@
       font-family: 'DM Sans', sans-serif;
       font-weight: 400;
       overflow-x: hidden;
-      cursor: none;
     }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
-    button { cursor: none; font-family: inherit; border: none; background: none; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
 
     /* ── CSS VARIABLES ────────────────────────────── */
     :root {
@@ -46,20 +45,6 @@
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
       --radius: 4px;
     }
-
-    /* ── CURSOR ───────────────────────────────────── */
-    .cursor {
-      position: fixed;
-      width: 8px; height: 8px;
-      background: var(--red);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 99999;
-      top: 0; left: 0;
-      will-change: transform;
-      transition: width 0.15s, height 0.15s;
-    }
-    .cursor.hover { width: 20px; height: 20px; background: rgba(224,32,32,0.35); }
 
     /* ── PAGE TRANSITION ──────────────────────────── */
     .page-overlay {
@@ -282,7 +267,7 @@
     .layout-feature {
       display: grid; grid-template-columns: 1fr 1fr;
       height: 520px; margin-bottom: 2px;
-      cursor: none; overflow: hidden;
+      cursor: pointer; overflow: hidden;
       opacity: 0; transform: translateY(20px);
       transition: opacity 0.5s ease, transform 0.5s ease;
     }
@@ -345,7 +330,7 @@
     /* ── SHARED GRID CARD ── */
     .grid-card {
       position: relative; overflow: hidden;
-      background: #0a0a0a; cursor: none;
+      background: #0a0a0a; cursor: pointer;
       contain: layout style paint;
     }
     .grid-card:hover { box-shadow: inset 0 0 0 1px rgba(224,32,32,0.25); }
@@ -468,7 +453,7 @@
     }
     .category-block {
       position: relative; overflow: hidden;
-      aspect-ratio: 4/3; cursor: none;
+      aspect-ratio: 4/3; cursor: pointer;
     }
     .category-bg {
       position: absolute; inset: 0;
@@ -720,7 +705,7 @@
       border-radius: 3px;
       font-family: var(--font-d); font-size: 15px; letter-spacing: 1px;
       color: var(--graytxt);
-      transition: all 0.2s; cursor: none;
+      transition: all 0.2s; cursor: pointer;
     }
     .size-pill:hover { border-color: var(--gray4); color: var(--bone); }
     .size-pill.selected { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.12); }
@@ -753,7 +738,7 @@
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--red); }
     .form-textarea { min-height: 100px; resize: vertical; }
-    .form-select { appearance: none; cursor: none; }
+    .form-select { appearance: none; cursor: pointer; }
     .btn-submit {
       font-family: var(--font-d); font-size: 18px; letter-spacing: 3px;
       background: var(--red); color: var(--bone);
@@ -784,7 +769,7 @@
       border-radius: 3px;
       font-family: var(--font-d); font-size: 15px;
       color: var(--graytxt);
-      transition: all 0.2s; cursor: none;
+      transition: all 0.2s; cursor: pointer;
     }
     .size-toggle.active { border-color: var(--red); color: var(--bone); background: rgba(224,32,32,0.15); }
     .preview-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--gray3); display: none; margin-top: 8px; }
@@ -883,8 +868,6 @@
       .layout-mosaic { grid-template-columns: 1fr 1fr; }
       .duo-cards { grid-template-columns: 1fr 1fr; }
       .steps-grid { grid-template-columns: 1fr; }
-      .cursor { display: none; }
-      body { cursor: auto; }
       button { cursor: pointer; }
       a { cursor: pointer; }
     }
@@ -893,7 +876,6 @@
 <body>
 
   <!-- Cursor -->
-  <div class="cursor" id="cursor"></div>
 
   <!-- Page transition overlay -->
   <div class="page-overlay" id="pageOverlay"></div>
@@ -1759,18 +1741,6 @@
       });
     }
 
-    // ── CURSOR ─────────────────────────────────────────
-    function initCursor() {
-      const cur = document.getElementById('cursor');
-      if (!cur || window.matchMedia('(pointer:coarse)').matches) { if(cur) cur.style.display='none'; return; }
-      document.addEventListener('mousemove', e => {
-        cur.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
-      }, { passive: true });
-      document.addEventListener('mouseover', e => {
-        const t = e.target.closest('a,button,.grid-card,.layout-feature,.category-block,.size-pill,.size-toggle');
-        cur.classList.toggle('hover', !!t);
-      });
-    }
 
     // ── ANIMATIONS ─────────────────────────────────────
     function initAnimations() {
@@ -1841,7 +1811,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       restoreSession();
       initAnimations();
-      initCursor();
       loadProducts();
     });
 
