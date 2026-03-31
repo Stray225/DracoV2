@@ -545,11 +545,11 @@
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const DEFAULT_ROPA = [
-      { name:'Hoodie Premium Negro', price:'$58.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'NEW', description:'Algodón 400g, interior cepillado, capucha ajustable con cordón plano. Fit oversized para el look correcto.', sizes:['XS','S','M','L','XL'], stock:15, images:['https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80'] },
+      { name:'Hoodie Premium Negro', price:'$58.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'NEW', description:'Algodón 400g, interior cepillado, capucha ajustable con cordón plano. Fit oversized para el look correcto.', sizes:['XS','S','M','L','XL'], stock:15, images:['https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80'] },
       { name:'Remera Oversize Logo', price:'$32.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'HOT', description:'100% algodón ringspun, corte oversized, gráfico DRACO en chest. Drop shoulders, costuras laterales crudas.', sizes:['XS','S','M','L','XL'], stock:20, images:['https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=600&q=80'] },
       { name:'Jogger Cargo Tech', price:'$55.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'', description:'Ripstop ligero, múltiples bolsillos cargo con cierre, cintura elástica ajustable, tobillo ceñido.', sizes:['XS','S','M','L','XL'], stock:8, images:['https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600&q=80'] },
       { name:'Coach Jacket', price:'$88.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'DROP', description:'Nylon ligero resistente al viento, cuello con bolsillo, cierre de entrada. Estética 90s reinventada.', sizes:['S','M','L','XL'], stock:6, images:['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80'] },
-      { name:'Crewneck Básico', price:'$48.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'', description:'Fleece 320g, cuello redondo, puños y bajo con ribete 1x1. El básico que nunca falla.', sizes:['XS','S','M','L','XL'], stock:12, images:['https://images.unsplash.com/photo-1503342564343-6f7f8399f3ab?w=600&q=80'] },
+      { name:'Crewneck Básico', price:'$48.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'', description:'Fleece 320g, cuello redondo, puños y bajo con ribete 1x1. El básico que nunca falla.', sizes:['XS','S','M','L','XL'], stock:12, images:['https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=600&q=80'] },
       { name:'Gorra Snapback', price:'$28.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'NEW', description:'Panel estructurado en twill premium, bordado tonal en frente, cierre snapback ajustable.', sizes:['ÚNICO'], stock:25, images:['https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80'] },
       { name:'Buzo Canguro Pesado', price:'$62.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'HOT', description:'Terry de algodón 450g, bolsillo canguro, interior sin pelusar. El más buscado del catálogo.', sizes:['XS','S','M','L','XL'], stock:10, images:['https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80'] },
       { name:'Hoodie Oversized Cropped', price:'$54.000', category:'ropa', cat:'Ropa', brand:'DRACO', badge:'', description:'Variante cropped del hoodie clásico. Crop box fit, misma calidad de tela, estilo más urbano.', sizes:['XS','S','M','L'], stock:9, images:['https://images.unsplash.com/photo-1620799139834-6b8f844fbe61?w=600&q=80'] },
@@ -669,7 +669,7 @@
     }
 
     function buildCard(p, index) {
-      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80';
+      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80';
       const badge = p.badge ? `<span class="card-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
       const adminBtns = `<div class="card-admin-actions">
         <button class="card-admin-btn card-edit-btn" onclick="openEditModal(event,'${p.id}')" title="Editar">✎</button>
