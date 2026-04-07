@@ -190,20 +190,13 @@
       z-index: 1;
       perspective: 1200px;
     }
-    .hero-sneaker-img {
+    .hero-sneaker-video {
       width: 100%; height: 100%;
       object-fit: contain;
-      opacity: 0.1;
-      filter: grayscale(30%) brightness(1.1);
-      animation: sneakerSpin 20s linear infinite;
-      will-change: transform;
-      transition: opacity 1.5s ease;
+      opacity: 0.15;
+      transition: opacity 1.2s ease;
     }
-    .hero-sneaker-img.fading { opacity: 0; }
-    @keyframes sneakerSpin {
-      0%   { transform: rotateY(0deg); }
-      100% { transform: rotateY(360deg); }
-    }
+    .hero-sneaker-video.fading { opacity: 0; }
     /* Glow under sneaker */
     .hero-sneaker-glow {
       position: absolute;
@@ -1281,9 +1274,9 @@
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
 
-    <!-- Rotating sneaker background (cycles every 10s) -->
+    <!-- Rotating sneaker video background (cycles every 8s) -->
     <div class="hero-sneaker-bg">
-      <img src="sneaker1.png" alt="" class="hero-sneaker-img" id="heroSneakerBg" loading="eager">
+      <video class="hero-sneaker-video" id="heroSneakerVid" autoplay muted loop playsinline></video>
       <div class="hero-sneaker-glow"></div>
     </div>
 
@@ -2284,25 +2277,19 @@
       gsap.from('#heroContact', { opacity:0, duration:0.5, ease:'power2.out', delay:1.5 });
       gsap.from('.hero-sneaker-bg', { opacity:0, scale:0.8, duration:1.2, ease:'power2.out', delay:0.4 });
 
-      // Cycle sneaker background every 10s
-      const sneakerImages = [
-        'sneaker1.png',
-        'sneaker2.png',
-        'sneaker3.png',
-        'sneaker4.png'
-      ];
-      let sneakerIdx = 0;
-      const sneakerEl = document.getElementById('heroSneakerBg');
-      // Preload all images
-      sneakerImages.forEach(src => { const img = new Image(); img.src = src; });
+      // Cycle sneaker videos every 8s, random start
+      const sneakerVideos = ['sneaker-vid1.mp4', 'sneaker-vid2.mp4', 'sneaker-vid3.mp4'];
+      let vidIdx = Math.floor(Math.random() * sneakerVideos.length);
+      const vidEl = document.getElementById('heroSneakerVid');
+      vidEl.src = sneakerVideos[vidIdx];
       setInterval(() => {
-        sneakerEl.classList.add('fading');
+        vidEl.classList.add('fading');
         setTimeout(() => {
-          sneakerIdx = (sneakerIdx + 1) % sneakerImages.length;
-          sneakerEl.src = sneakerImages[sneakerIdx];
-          sneakerEl.classList.remove('fading');
-        }, 1500);
-      }, 10000);
+          vidIdx = (vidIdx + 1) % sneakerVideos.length;
+          vidEl.src = sneakerVideos[vidIdx];
+          vidEl.classList.remove('fading');
+        }, 1200);
+      }, 8000);
       gsap.from('.hero-scroll-hint', { opacity:0, y:10, duration:0.6, delay:1.8 });
 
       // ── Smart Navbar: hide on scroll down, show on scroll up ──
