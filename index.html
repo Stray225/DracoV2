@@ -188,13 +188,13 @@
       height: clamp(420px, 56vw, 840px);
       pointer-events: none;
       z-index: 1;
-      perspective: 1200px;
+      overflow: hidden;
     }
     .hero-sneaker-video {
-      width: 130%; height: 130%;
-      object-fit: cover;
-      object-position: center top;
-      opacity: 0.15;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      opacity: 0.08;
       transition: opacity 1.2s ease;
     }
     .hero-sneaker-video.fading { opacity: 0; }
@@ -225,7 +225,7 @@
       filter: drop-shadow(0 0 24px rgba(224,32,32,0.7));
     }
     .hero-logo-img {
-      height: clamp(240px, 42vw, 540px);
+      height: clamp(280px, 50vw, 620px);
       width: auto;
       filter: drop-shadow(0 0 40px rgba(224,32,32,0.5)) drop-shadow(0 0 80px rgba(224,32,32,0.2));
       position: relative;
@@ -295,12 +295,12 @@
     .hero-contact-link {
       font-family: var(--font-d); font-size: 12px; letter-spacing: 4px;
       color: rgba(240,237,232,0.3);
-      margin-top: 8px;
+      margin-top: 4px; margin-bottom: 24px;
       transition: color 0.3s;
     }
     .hero-contact-link:hover { color: rgba(240,237,232,0.6); }
     .hero-scroll-hint {
-      position: absolute; bottom: 28px; left: 50%;
+      position: relative; margin-top: 16px; left: 50%;
       transform: translateX(-50%);
       z-index: 2;
       display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -2276,7 +2276,7 @@
       gsap.from('#heroTagline', { opacity:0, y:10, duration:0.6, ease:'power2.out', delay:1.1 });
       gsap.from('#heroCtaRow', { opacity:0, y:14, duration:0.6, ease:'power2.out', delay:1.3 });
       gsap.from('#heroContact', { opacity:0, duration:0.5, ease:'power2.out', delay:1.5 });
-      gsap.from('.hero-sneaker-bg', { opacity:0, scale:0.8, duration:1.2, ease:'power2.out', delay:0.4 });
+      gsap.from('.hero-sneaker-bg', { opacity:0, scale:0.95, duration:0.6, ease:'power2.out', delay:0.1 });
 
       // Cycle sneaker videos every 8s, random start
       const sneakerVideos = ['sneaker-vid1.mp4', 'sneaker-vid2.mp4', 'sneaker-vid3.mp4'];
