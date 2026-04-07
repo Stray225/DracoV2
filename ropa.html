@@ -501,6 +501,10 @@
           <div class="form-group">
             <label class="form-label">TALLES</label>
             <div class="size-toggle-group" id="sizeToggleGroup"></div>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <input type="text" id="customSizeInput" class="form-input" placeholder="Talle personalizado (ej: 41.5)" style="flex:1;margin:0">
+              <button type="button" class="btn-submit" style="padding:8px 16px;font-size:12px;white-space:nowrap" onclick="addCustomSize()">+ AGREGAR</button>
+            </div>
           </div>
           <div class="form-group"><label class="form-label">DESCRIPCIÓN</label><textarea id="pDesc" class="form-textarea"></textarea></div>
           <div class="form-group">
@@ -625,10 +629,9 @@
       try {
         const { error } = await sb.from('products').delete().eq('id', id);
         if (error) throw error;
-        allProducts = allProducts.filter(p => p.id !== id);
-        applyFilters();
         showToast('Producto eliminado', 'success');
-      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        await loadProducts();
+      } catch (e) { showToast('Error al eliminar: ' + e.message, 'error'); }
     }
 
     async function uploadImage(file) {
@@ -811,6 +814,19 @@
         `<button type="button" class="size-toggle${selected.includes(s)?' active':''}" data-size="${s}" onclick="this.classList.toggle('active')">${s}</button>`
       ).join('');
     }
+    function addCustomSize() {
+      const input = document.getElementById('customSizeInput');
+      const size = input.value.trim();
+      if (!size) return;
+      const group = document.getElementById('sizeToggleGroup');
+      const existing = group.querySelector(`[data-size="${size}"]`);
+      if (existing) { existing.classList.add('active'); input.value = ''; return; }
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'size-toggle active'; btn.dataset.size = size; btn.textContent = size;
+      btn.onclick = function() { this.classList.toggle('active'); };
+      group.appendChild(btn);
+      input.value = '';
+    }
     function switchImgTab(tab, btn) {
       editImgTab = tab;
       document.querySelectorAll('.img-tab').forEach(b => b.classList.remove('active'));
@@ -824,7 +840,7 @@
 
     function openDeleteModal(e, id, name) { e.stopPropagation(); deleteTargetId=id; document.getElementById('deleteProductName').textContent=name; openModal('deleteModal'); }
     function closeDeleteModal() { closeModal('deleteModal'); deleteTargetId=null; }
-    async function confirmDelete() { if (!deleteTargetId) return; closeDeleteModal(); await deleteProduct(deleteTargetId); }
+    async function confirmDelete() { if (!deleteTargetId) return; const idToDelete = deleteTargetId; closeDeleteModal(); await deleteProduct(idToDelete); }
 
     function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
