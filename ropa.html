@@ -590,25 +590,13 @@
       try {
         const { data, error } = await sb.from('products').select('*').eq('category', PAGE_CATEGORY).order('created_at', { ascending: false });
         if (error) throw error;
-        if (!data || data.length === 0) { await seedDefaultProducts(); return; }
-        allProducts = data;
+        allProducts = data || [];
         applyFilters();
       } catch (e) {
         console.warn('Supabase no disponible:', e.message);
         allProducts = DEFAULT_ROPA.map((p, i) => ({ ...p, id: 'local-' + i }));
         applyFilters();
       }
-    }
-
-    async function seedDefaultProducts() {
-      try {
-        const { data, error } = await sb.from('products').insert(DEFAULT_ROPA).select();
-        if (error) throw error;
-        allProducts = data;
-      } catch(e) {
-        allProducts = DEFAULT_ROPA.map((p, i) => ({ ...p, id: 'local-' + i }));
-      }
-      applyFilters();
     }
 
     async function saveProduct(data, isEdit, editId) {

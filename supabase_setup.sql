@@ -34,6 +34,9 @@ CREATE POLICY "products_select_public"
 CREATE POLICY "products_insert_anon"
   ON public.products FOR INSERT TO anon WITH CHECK (true);
 
+-- NOTA DE SEGURIDAD: estas políticas permiten que cualquier persona borre o
+-- edite productos. Para restringirlo solo al admin, hay que implementar
+-- Supabase Auth y cambiar "anon" por "authenticated" en estas dos líneas.
 CREATE POLICY "products_update_anon"
   ON public.products FOR UPDATE TO anon USING (true) WITH CHECK (true);
 
